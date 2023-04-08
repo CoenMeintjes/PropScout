@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 from urllib.parse import urlparse
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+import re
 
 # Ignore SSL certificate errors
 ctx = ssl.create_default_context()
@@ -14,14 +15,16 @@ ctx.verify_mode = ssl.CERT_NONE
 conn = sqlite3.connect('spider.sqlite')
 cur = conn.cursor()
 
+#removed the unecessary columns for page ranking
 cur.execute('''CREATE TABLE IF NOT EXISTS Pages
     (id INTEGER PRIMARY KEY, url TEXT UNIQUE, html TEXT,
-     error INTEGER, old_rank REAL, new_rank REAL)''')
+     error INTEGER)''')
 
 cur.execute('''CREATE TABLE IF NOT EXISTS Links
     (from_id INTEGER, to_id INTEGER, UNIQUE(from_id, to_id))''')
 
-cur.execute('''CREATE TABLE IF NOT EXISTS Webs (url TEXT UNIQUE)''')
+# updated the webs column to website
+cur.execute('''CREATE TABLE IF NOT EXISTS Websites (url TEXT UNIQUE)''')
 
 # Check to see if we are already in progress...
 cur.execute('SELECT id,url FROM Pages WHERE html is NULL and error is NULL ORDER BY RANDOM() LIMIT 1')
@@ -30,24 +33,25 @@ if row is not None:
     print("Restarting existing crawl.  Remove spider.sqlite to start a fresh crawl.")
 else :
     starturl = input('Enter web url or enter: ')
-    if ( len(starturl) < 1 ) : starturl = 'https://python-data.dr-chuck.net/'
+    # starting the crawl from city_of_cape_town and only want info on the sub places of this location so need to design this
+    if ( len(starturl) < 1 ) : starturl = 'https://www.property24.com/' 
     if ( starturl.endswith('/') ) : starturl = starturl[:-1]
     web = starturl
     if ( starturl.endswith('.htm') or starturl.endswith('.html') ) :
         pos = starturl.rfind('/')
-        web = starturl[:pos]
+        web = starturl[:pos]   
     if ( len(web) > 1 ) :
-        cur.execute('INSERT OR IGNORE INTO Webs (url) VALUES ( ? )', ( web, ) )
-        cur.execute('INSERT OR IGNORE INTO Pages (url, html, new_rank) VALUES ( ?, NULL, 1.0 )', ( starturl, ) )
+        cur.execute('INSERT OR IGNORE INTO Websites (url) VALUES ( ? )', ( web, ) )
+        cur.execute('INSERT OR IGNORE INTO Pages (url, html) VALUES ( ?, NULL)', ( starturl, ) )
         conn.commit()
 
 # Get the current website
-cur.execute('''SELECT url FROM Webs''')
-webs = list()
+cur.execute('''SELECT url FROM Websites''')
+websites = list()
 for row in cur:
-    webs.append(str(row[0]))
+    websites.append(str(row[0]))
 
-print(webs)
+print(websites)
 
 many = 0
 while True:
@@ -63,10 +67,16 @@ while True:
         # print row
         fromid = row[0]
         url = row[1]
+        # # using regular expression to limit the crawl to the province or place which has been specified by the original url input.
+        # # re.match is matching the the reg ex pattern to the url VAR  
+        # pattern = r'^' + re.escape(url) + r'\d{0,8}$'
+        # if not re.match(pattern, url):
+        #     continue
     except:
         print('No unretrieved HTML pages found')
         many = 0
         break
+    
 
     # end=' ' ends the printed line with a whitespace instead of the standard \n
     print(fromid, url, end=' ')
@@ -86,7 +96,7 @@ while True:
             cur.execute('DELETE FROM Pages WHERE url=?', ( url, ) )
             conn.commit()
             continue
-
+        
         print('('+str(len(html))+')', end=' ')
 
         soup = BeautifulSoup(html, "html.parser")
@@ -100,7 +110,7 @@ while True:
         conn.commit()
         continue
 
-    cur.execute('INSERT OR IGNORE INTO Pages (url, html, new_rank) VALUES ( ?, NULL, 1.0 )', ( url, ) )
+    cur.execute('INSERT OR IGNORE INTO Pages (url, html) VALUES ( ?, NULL)', ( url, ) )
     cur.execute('UPDATE Pages SET html=? WHERE url=?', (memoryview(html), url ) )
     conn.commit()
 
@@ -121,15 +131,15 @@ while True:
         # print href
         if ( len(href) < 1 ) : continue
 
-		# Check if the URL is in any of the webs
+		# Check if the URL is in any of the websites
         found = False
-        for web in webs:
+        for web in websites:
             if ( href.startswith(web) ) :
                 found = True
                 break
         if not found : continue
 
-        cur.execute('INSERT OR IGNORE INTO Pages (url, html, new_rank) VALUES ( ?, NULL, 1.0 )', ( href, ) )
+        cur.execute('INSERT OR IGNORE INTO Pages (url, html) VALUES ( ?, NULL)', ( href, ) )
         count = count + 1
         conn.commit()
 
