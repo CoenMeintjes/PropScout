@@ -1,16 +1,16 @@
 from __future__ import print_function
-
 import os.path
-
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from bs4 import BeautifulSoup
+import base64
+import pprint
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
-
 
 def main():
     """Shows basic usage of the Gmail API.
@@ -37,20 +37,25 @@ def main():
     try:
         # Call the Gmail API
         service = build('gmail', 'v1', credentials=creds)
-        results = service.users().labels().list(userId='me').execute()
-        labels = results.get('labels', [])
-
-        if not labels:
-            print('No labels found.')
+        results = service.users().messages().list(userId='me', q='from: property24', maxResults=10).execute()
+        messages = results.get('messages', [])
+        
+        for message in messages:
+            msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
+            body = msg['payload']['body']['data']
+            decode_body =base64.urlsafe_b64decode(body.encode('UTF-8')).decode('UTF-8')
+            soup = BeautifulSoup(decode_body, "html.parser")
+            tags = soup('a')
+            for tag in tags:
+                print('URL', tag.get('href', None))     
+            print('===========')
+        if not messages:
+            print('No messages found.')
             return
-        print('Labels:')
-        for label in labels:
-            print(label['name'])
 
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
         print(f'An error occurred: {error}')
-
 
 if __name__ == '__main__':
     main()
