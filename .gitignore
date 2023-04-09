@@ -1,4 +1,5 @@
 credntials.json
-data moder.drawio
+*.drawio
 *.sqlite
 *.json
+google_api_example.py
