@@ -3,6 +3,7 @@
 import os.path
 import base64
 import pprint
+import sqlite3
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -10,6 +11,19 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from bs4 import BeautifulSoup
+
+conn = sqlite3.connect('parsed_links.sqlite')
+cur = conn.cursor()
+
+# Create the tables using executescript()
+cur.executescript('''
+DROP TABLE IF EXISTS Urls;
+
+CREATE TABLE Urls (
+    id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    url    TEXT UNIQUE
+)
+''')
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
@@ -34,7 +48,7 @@ if not creds or not creds.valid:
 try:
     # Initial Call of the Gmail API results in dict() of messages IDs that conform to parameters
     service = build('gmail', 'v1', credentials=creds)
-    results = service.users().messages().list(userId='me', q='from: property24', maxResults=2).execute()
+    results = service.users().messages().list(userId='me', q='from: property24', maxResults=10).execute()
     messages = results.get('messages', [])
     
     # Iterate through the pulled messages and extract the relevant information to parse to SQLite
@@ -49,15 +63,24 @@ try:
         tags = soup('a')
 
         # iterate trough the tags and extract links to the listing link
+        # insert these into the table URLs amd commit when done
         for tag in tags:
             href = tag.get('href', None)
             if href and 'RedirectToListing' in href:
-                print('URL:', href)     
-        print('===========')
+                cur.execute('''INSERT OR IGNORE INTO Urls (url)
+                             VALUES ( ? )''', ( href, ) )
+        conn.commit()
+
+    # Print out the links that have been added to the DB
+    # TODO - this is currently printing all rows so need to upsdate to only show lastest
+    cur.execute('SELECT id, url FROM Urls ORDER BY id DESC')
+    rows = cur.fetchall() 
+    for row in rows:
+        print(row)
     
     if not messages:
         print('No messages found.')
-
+    
 except HttpError as error:
     # TODO(developer) - Handle errors from gmail API.
     print(f'An error occurred: {error}')
