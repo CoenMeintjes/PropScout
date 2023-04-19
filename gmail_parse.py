@@ -4,6 +4,7 @@ import os.path
 import base64
 import pprint
 import sqlite3
+import urllib
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -21,7 +22,8 @@ DROP TABLE IF EXISTS Urls;
 
 CREATE TABLE Urls (
     id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-    url    TEXT UNIQUE
+    url    TEXT UNIQUE,
+    html   TEXT
 )
 ''')
 
@@ -67,6 +69,7 @@ try:
         for tag in tags:
             href = tag.get('href', None)
             if href and 'RedirectToListing' in href:
+                fetch = urlopen(href)
                 cur.execute('''INSERT OR IGNORE INTO Urls (url)
                              VALUES ( ? )''', ( href, ) )
         conn.commit()
