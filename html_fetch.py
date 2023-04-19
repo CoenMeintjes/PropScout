@@ -1,27 +1,37 @@
 #!/usr/bin/env python
 
-# for this program will be fetching a link from SQLite DB and then parsing the html from that page into the database
-# this could probably be merged into the initial gmail_parse but will keep it seperate for now
+# This program is for extracting the relevant property information and storing it in the property analysis database which can then be used for analysis.
 
 import sqlite3
 from bs4 import BeautifulSoup
-import ssl
-from urllib.parse import urljoin
-from urllib.parse import urlparse
-from urllib.request import urlopen
 
-# Ignore SSL certificate errors
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
-
-conn = sqlite3.connect('parsed_link.sqlite')
+conn = sqlite3.connect('parsed_links.sqlite')
 cur = conn.cursor()
 
-# Steps
+# Create the tables using executescript()
+cur.executescript('''
+DROP TABLE IF EXISTS Properties;
+
+CREATE TABLE Properties (
+    id            INTEGER PRIMARY KEY UNIQUE,
+    list_number   TEXT
+)
+''')
 
 # Fetch a link from the DB and follow the link
+cur.execute('SELECT html FROM Urls')
+# url = list()
+for row in cur:
+    html = str(row[0])
+    soup = BeautifulSoup(html, "html.parser")
 
-# Use beautiful soup to parse the html of interest into the db
-
-# Once in the data base need to extract the relevant information into some kind of format that can be parsed with pandas as a df but this could be a seperate program again.
+    # use relative xPath to find listing number.
+    element = soup.find(
+        'div', class_='row p24_propertyOverviewRow').find('div', 
+               class_='col-6 noPadding').find('div', 
+               class_='p24_info')
+    list_number = element.text
+cur.execute('''INSERT OR IGNORE INTO Properties (list_number)
+                            VALUES ( ? )''', ( list_number, ) )
+conn.commit()
+print(list_number)
