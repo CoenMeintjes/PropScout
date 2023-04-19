@@ -4,14 +4,22 @@ import os.path
 import base64
 import pprint
 import sqlite3
-import urllib
+from urllib.request import urlopen
+from urllib.parse import urljoin
+from urllib.parse import urlparse
+import ssl
+from bs4 import BeautifulSoup
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from bs4 import BeautifulSoup
+
+# Ignore SSL certificate errors
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
 
 conn = sqlite3.connect('parsed_links.sqlite')
 cur = conn.cursor()
@@ -70,8 +78,10 @@ try:
             href = tag.get('href', None)
             if href and 'RedirectToListing' in href:
                 fetch = urlopen(href)
-                cur.execute('''INSERT OR IGNORE INTO Urls (url)
-                             VALUES ( ? )''', ( href, ) )
+                html = fetch.read()
+                # soup = BeautifulSoup(html, "html.parser")
+                cur.execute('''INSERT OR IGNORE INTO Urls (url, html)
+                             VALUES ( ?, ? )''', ( href, html ) )
         conn.commit()
 
     # Print out the links that have been added to the DB
