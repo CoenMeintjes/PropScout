@@ -72,7 +72,7 @@ try:
         conn.commit()
 
     # Print out the links that have been added to the DB
-    # TODO - this is currently printing all rows so need to upsdate to only show lastest
+    # TODO - this is currently printing all rows so need to update to only show lastest
     cur.execute('SELECT id, url FROM Urls ORDER BY id DESC')
     rows = cur.fetchall() 
     for row in rows:
