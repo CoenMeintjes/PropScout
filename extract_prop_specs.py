@@ -10,15 +10,16 @@ conn = sqlite3.connect('parsed_links.sqlite')
 cur = conn.cursor()
 
 all_properties = {}
-# input how many listing to process
+# input how many listings to process
 many = 0
 while True:
     if ( many < 1 ) :
-        sval = input('How many pages:')
+        sval = input('Number of properties to process:')
         if ( len(sval) < 1 ) : break
         many = int(sval)
     many = many - 1
 
+    # TODO add a try except to check if there are any unparsed rows and proceed accordingly
     # Fetch html from the DB parse and extract values
     cur.execute('SELECT id,html FROM Urls WHERE parsed is NULL ORDER BY RANDOM() LIMIT 1')
     
