@@ -2,8 +2,15 @@
 
 The PropScout app is a simple to use app created for property investors to help them identify promising markets as well as simpligy the process of property deal analysis.
 
-## Immediate Issues
+## State of Development
 
-In terms of the market analysis - Both stats (statssa and adrian frith) sites are blocking the app from webscraping so not sure how to deal with that.
+- property alerts sent to gmail account are parsed using google gmail API
+- html copy of page stored in SQLite database
+- property specs are extracted from the html and parsed to json format and recommitted to database
 
-property24 is allowing the spider to accesss the site so maybe focus on the email trigger feature.
+## Next Step
+
+- take the data from json to dataframe for property anlysis
+- once analysed the results should be stored somewhere for reference
+- would like visualisation of the properties on a map and the ability to click on them to see more information
+- also want the dashboard to indicate properties that meet investment criteria
