@@ -26,13 +26,12 @@ cur = conn.cursor()
 
 # Create the tables using executescript()
 cur.executescript('''
-DROP TABLE IF EXISTS Urls;
-
-CREATE TABLE Urls (
-    id      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+CREATE TABLE IF NOT EXISTS Urls (
+    id      INTEGER NOT NULL PRIMARY KEY UNIQUE,
     url     TEXT UNIQUE,
     html    TEXT,
-    json    TEXT
+    json    TEXT,
+    parsed  INETEGER
 )
 ''')
 
@@ -68,7 +67,7 @@ try:
     # Email bodies are encoded so this is parsed with base64 lib 
     for message in messages:
         msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
-        body = msg['payload']['body']['data']
+        body = msg.get('payload', {}).get('body', {}).get('data', '') # using dict.get() method to access nested dictionary values without raising a KeyError if no key
         decode_body =base64.urlsafe_b64decode(body.encode('UTF-8')).decode('UTF-8')
         soup = BeautifulSoup(decode_body, "html.parser")
         tags = soup('a')
@@ -78,11 +77,15 @@ try:
         for tag in tags:
             href = tag.get('href', None)
             if href and 'RedirectToListing' in href:
-                fetch = urlopen(href)
-                html = fetch.read()
-                # soup = BeautifulSoup(html, "html.parser")
-                cur.execute('''INSERT OR IGNORE INTO Urls (url, html)
-                             VALUES ( ?, ? )''', ( href, html ) )
+                # use try execpt to aviod being stopped by url error
+                try:
+                    fetch = urlopen(href)
+                    html = fetch.read()
+                    # soup = BeautifulSoup(html, "html.parser")
+                    cur.execute('''INSERT OR IGNORE INTO Urls (url, html)
+                                VALUES ( ?, ? )''', ( href, html ) )
+                except:
+                    continue
         conn.commit()
 
     # Print out the links that have been added to the DB
