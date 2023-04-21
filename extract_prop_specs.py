@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-# This program is for extracting the relevant property information and storing it in the property analysis database which can then be used for analysis.
+''' This program is parsing html to a json formatted property specifications
+dictionary which is saved back into the SQLite DB for later use in the property analysis model '''
 
 import sqlite3
 from bs4 import BeautifulSoup
@@ -22,18 +23,43 @@ while True:
     # TODO add a try except to check if there are any unparsed rows and proceed accordingly
     # Fetch html from the DB parse and extract values
     cur.execute('SELECT id,html FROM Urls WHERE parsed is NULL ORDER BY RANDOM() LIMIT 1')
-    
-    # iterate through the rows and extract data
+    # iterate through the rows in the DB and extract property specifications data
     for row in cur:
         id = row[0]
         html = str(row[1])
         soup = BeautifulSoup(html, "html.parser")
 
+        # instantiate master dict()
+        property_specs = {}
+
+        # extract purchase price
+        price_text = None
+        price_div = soup.find('span', class_="p24_price")
+        if price_div:
+            if price_text is None:    
+                price_text = price_div.text.strip()
+        else:
+            print('Price not found')
+
+        # write price to property_specs    
+        property_specs['Price'] = price_text
+
+        # extract purchase price
+        blurb_text = None
+        blurb_div = soup.find('span', class_="p24_title")
+        if blurb_div:
+            if blurb_text is None:   
+                blurb_text = blurb_div.text.strip()
+        else:
+            print('Blurb not found')
+
+        # write blurb to property_specs    
+        property_specs['Blurb'] = blurb_text
+        
+        # Move on to extracting specs from the overview table
         # parse relevant property information located in property overview table with class='row p24_propertyOverviewRow'     
-        # Find all div elements with class "row p24_propertyOverviewRow"
         table_rows = soup.find_all('div', class_='row p24_propertyOverviewRow') # this creates a list from each row of the table
 
-        property_specs = {}
         # Iterate through the list of rows
         for row in table_rows:
             # Find the div tag with class "p24_propertyOverviewKey" inside the row
@@ -67,7 +93,7 @@ while True:
 
         # store the property specs in SQLite DB in json format
         cur.execute('''UPDATE Urls SET json = ?, parsed = ? WHERE id = ? ''', ( str(property_specs), 1, id, ))
-        conn.commit()   
+        conn.commit()
 
 # print(property_specs)   # Print the final property_specs dictionary after the loop
 print(json.dumps(all_properties, indent=4))  # Print the final all_properties dictionary after the loop

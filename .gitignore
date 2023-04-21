@@ -4,3 +4,4 @@ credntials.json
 *.sqlite-journal
 *.json
 google_api_example.py
+*.html
