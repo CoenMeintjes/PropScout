@@ -74,4 +74,4 @@ print(json.dumps(all_properties, indent=4))  # Print the final all_properties di
 
 # Save the all_properties dictionary as a JSON file
 with open('all_properties.json', 'w') as json_file:
-    json.dump(all_properties, json_file)
+    json.dump(all_properties, json_file, indent=4)
