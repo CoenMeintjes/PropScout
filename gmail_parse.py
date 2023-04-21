@@ -29,9 +29,10 @@ cur.executescript('''
 DROP TABLE IF EXISTS Urls;
 
 CREATE TABLE Urls (
-    id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-    url    TEXT UNIQUE,
-    html   TEXT
+    id      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    url     TEXT UNIQUE,
+    html    TEXT,
+    json    TEXT
 )
 ''')
 
