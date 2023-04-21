@@ -56,7 +56,7 @@ if not creds or not creds.valid:
         token.write(creds.to_json())
 
 try:
-    # Initial Call of the Gmail API results in dict() of messages IDs that conform to parameters
+    # Initial Call of the Gmail API results in dict() of messages IDs that conform to parameters LIMITED to 10 for now
     service = build('gmail', 'v1', credentials=creds)
     results = service.users().messages().list(userId='me', q='from: property24', maxResults=10).execute()
     messages = results.get('messages', [])
