@@ -1,5 +1,6 @@
 credntials.json
 *.drawio
 *.sqlite
+*.sqlite-journal
 *.json
 google_api_example.py
