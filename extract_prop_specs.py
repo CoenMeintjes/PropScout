@@ -87,17 +87,22 @@ while True:
             # Get the 'Listing Number' from property_specs
             property_id = property_specs.get('Listing Number')
 
+            # Serialize json
+            specs_json = json.dumps(property_specs)
+
             # If property_id is not in all_properties, create an empty list
             if property_id not in all_properties:
-                all_properties[property_id] = property_specs
+                all_properties[property_id] = property_specs  
 
         # store the property specs in SQLite DB in json format
-        cur.execute('''UPDATE Urls SET json = ?, parsed = ? WHERE id = ? ''', ( str(property_specs), 1, id, ))
+        cur.execute('''UPDATE Urls SET json = ?, parsed = ? WHERE id = ? ''', ( str(specs_json), 1, id, ))
         conn.commit()
 
+all_properties_json = json.dumps(all_properties, indent=4)
+
 # print(property_specs)   # Print the final property_specs dictionary after the loop
-print(json.dumps(all_properties, indent=4))  # Print the final all_properties dictionary after the loop
+print(all_properties_json)  # Print the final all_properties dictionary after the loop
 
 # Save the all_properties dictionary as a JSON file
 with open('all_properties.json', 'w') as json_file:
-    json.dump(all_properties, json_file, indent=4)
+    json.dump(all_properties, json_file)
