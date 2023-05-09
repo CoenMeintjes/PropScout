@@ -9,6 +9,7 @@ from urllib.parse import urljoin
 from urllib.parse import urlparse
 import ssl
 from bs4 import BeautifulSoup
+import datetime
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -51,6 +52,7 @@ if not creds or not creds.valid:
         flow = InstalledAppFlow.from_client_secrets_file(
             'credentials.json', SCOPES)
         creds = flow.run_local_server(port=0)
+        creds.token_expiry = datetime.datetime.now() + datetime.timedelta(hours=25)  # Set token expiration time to 25 hours
     # Save the credentials for the next run
     with open('token.json', 'w') as token:
         token.write(creds.to_json())
@@ -77,7 +79,7 @@ try:
         for tag in tags:
             href = tag.get('href', None)
             if href and 'RedirectToListing' in href:
-                # use try execpt to aviod being stopped by url error
+                # use try except to avoid being stopped by url error
                 try:
                     fetch = urlopen(href)
                     html = fetch.read()
@@ -89,11 +91,11 @@ try:
         conn.commit()
 
     # Print out the links that have been added to the DB
-    # TODO - this is currently printing all rows so need to update to only show latest
-    cur.execute('SELECT id, url FROM Urls ORDER BY id DESC')
+    cur.execute('SELECT id, url, parsed FROM Urls ORDER BY id ASC')
     rows = cur.fetchall() 
     for row in rows:
-        print(row)
+        if row[2] is None: # checking if the parsed value is 0 (parsed column index is [2])
+            print(row)
     
     if not messages:
         print('No messages found.')
