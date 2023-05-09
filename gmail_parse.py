@@ -22,7 +22,7 @@ ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
-conn = sqlite3.connect('parsed_links.sqlite')
+conn = sqlite3.connect('property_analysis_db.sqlite')
 cur = conn.cursor()
 
 # Create the tables using executescript()
@@ -58,9 +58,10 @@ if not creds or not creds.valid:
         token.write(creds.to_json())
 
 try:
-    # Initial Call of the Gmail API results in dict() of messages IDs that conform to parameters LIMITED to 10 for now
+    # Initial Call of the Gmail API results in dict() of messages IDs that conform to parameters LIMITED to 50 
     service = build('gmail', 'v1', credentials=creds)
-    results = service.users().messages().list(userId='me', q='from: property24', maxResults=50).execute()
+    results = service.users().messages().list(userId='me', q='in:INBOX/02_Property/analysis_alerts', maxResults=50).execute()
+
     messages = results.get('messages', [])
     
     # Iterate through the pulled messages and extract the relevant information to parse to SQLite
