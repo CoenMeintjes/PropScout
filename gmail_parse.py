@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS Urls (
     url     TEXT UNIQUE,
     html    TEXT,
     json    TEXT,
-    parsed  INETEGER
+    parsed  INTEGER
 )
 ''')
 
@@ -58,7 +58,7 @@ if not creds or not creds.valid:
 try:
     # Initial Call of the Gmail API results in dict() of messages IDs that conform to parameters LIMITED to 10 for now
     service = build('gmail', 'v1', credentials=creds)
-    results = service.users().messages().list(userId='me', q='from: property24', maxResults=10).execute()
+    results = service.users().messages().list(userId='me', q='from: property24', maxResults=50).execute()
     messages = results.get('messages', [])
     
     # Iterate through the pulled messages and extract the relevant information to parse to SQLite
@@ -89,7 +89,7 @@ try:
         conn.commit()
 
     # Print out the links that have been added to the DB
-    # TODO - this is currently printing all rows so need to update to only show lastest
+    # TODO - this is currently printing all rows so need to update to only show latest
     cur.execute('SELECT id, url FROM Urls ORDER BY id DESC')
     rows = cur.fetchall() 
     for row in rows:
