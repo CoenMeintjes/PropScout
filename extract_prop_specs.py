@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import json
 import os
 
-conn = sqlite3.connect('parsed_links.sqlite')
+conn = sqlite3.connect('property_analysis_db.sqlite')
 cur = conn.cursor()
 
 all_properties = {}
