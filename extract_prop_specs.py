@@ -6,6 +6,7 @@ dictionary which is saved back into the SQLite DB for later use in the property 
 import sqlite3
 from bs4 import BeautifulSoup
 import json
+import os
 
 conn = sqlite3.connect('parsed_links.sqlite')
 cur = conn.cursor()
@@ -103,6 +104,20 @@ all_properties_json = json.dumps(all_properties, indent=4)
 # print(property_specs)   # Print the final property_specs dictionary after the loop
 print(all_properties_json)  # Print the final all_properties dictionary after the loop
 
-# Save the all_properties dictionary as a JSON file
+# Write data to a json file
+# Check if the file exists or not
+if os.path.isfile('all_properties.json') and os.stat('all_properties.json').st_size != 0:
+    # Read json file content
+    with open('all_properties.json', 'r') as json_file:
+        data = json.load(json_file)
+else:
+    # Create new file with first data if the file does not exist or is empty
+    data = all_properties
+    with open('all_properties.json', 'w') as json_file:
+        json.dump(data, json_file)
+
+# Update the existing json file
+data.update(all_properties)
+
 with open('all_properties.json', 'w') as json_file:
-    json.dump(all_properties, json_file)
+    json.dump(data, json_file)
