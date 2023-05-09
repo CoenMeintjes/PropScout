@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import datetime
 import subprocess
 
@@ -16,6 +14,6 @@ with open(log_file_name, 'a') as log_file:
 
     # Run the daily scripts
     subprocess.run(['python','gmail_parse.py'])
-
+    
     # Write the end of the log entry to the log file
     log_file.write('Script run complete.\n\n')
