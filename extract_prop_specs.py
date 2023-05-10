@@ -13,6 +13,7 @@ cur = conn.cursor()
 
 all_properties = {}
 # input how many listings to process
+# TODO improve this process as in some cases just want to process all so either 1-5 to check script or other option is all or 3rd option is break
 many = 0
 while True:
     if ( many < 1 ) :
@@ -21,7 +22,7 @@ while True:
         many = int(sval)
     many = many - 1
 
-    # TODO add a try except to check if there are any unparsed rows and proceed accordingly
+    # TODO add a try except to check if there are any unparsed rows and proceed accordingly (if all have been parsed then just print that and quit)
     # Fetch html from the DB parse and extract values
     cur.execute('SELECT id,html FROM Urls WHERE parsed is NULL ORDER BY RANDOM() LIMIT 1')
     # iterate through the rows in the DB and extract property specifications data
@@ -32,6 +33,10 @@ while True:
 
         # instantiate master dict()
         property_specs = {}
+
+        # TODO extract city (this should be the same as the search term from the alert)
+
+        # TODO extract rental / sale info to classify properly
 
         # extract purchase price
         price_text = None
