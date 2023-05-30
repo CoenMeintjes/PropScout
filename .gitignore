@@ -6,3 +6,5 @@ credntials.json
 google_api_example.py
 *.html
 *.txt
+excel_copy
+*.xlsx
