@@ -1,10 +1,10 @@
-credntials.json
 *.drawio
 *.sqlite
 *.sqlite-journal
 *.json
 google_api_example.py
 *.html
-*.txt
+daily_run_log.txt
 excel_copy
 *.xlsx
+myenv/
