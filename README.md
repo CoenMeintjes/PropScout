@@ -160,7 +160,3 @@ Note: Ensure that you have the necessary permissions and access rights to write 
 ## Contributing
 
 Contributions to PropScout are welcome! If you encounter any issues or have suggestions for improvements, please create an issue or submit a pull request.
-
-## License
-
-PropScout is licensed under the [MIT License](LICENSE).
