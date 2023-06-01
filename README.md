@@ -93,6 +93,8 @@ Follow the instructions below to use the `gmail_parse.py` script effectively:
 
 ### Script 2 | `extract_prop_specs.py`
 
+This script, `extract_prop_specs.py`, extracts property specifications from HTML content stored in the SQLite database and stores them in a JSON format in the database itself. It also maintains an updated `all_properties.json` file with the complete list of properties' JSON data.
+
 1. Make sure you have the necessary dependencies installed. You can install them by running the following command:
 
    ```python
