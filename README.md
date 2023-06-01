@@ -4,7 +4,9 @@
 
 ## Project Overview
 
-The main goal of `PropScout` is to help property investors identify promising markets and offer a systematic framework for the process of real estate deal analysis. By leveraging the power of data extraction, storage, and analysis, `PropScout` enables users to streamline their property analysis workflow and make informed investment decisions.
+PropScout is a real estate investment app that helps property investors identify promising markets and offers a systematic framework for real estate deal analysis. It leverages data extraction, storage, and analysis to streamline the property analysis workflow and enable users to make informed investment decisions. Building on previous projects, PropScout focuses on collecting and storing property listings to create a comprehensive database for analysis, with plans to incorporate additional features in the future.
+
+PropScout builds upon the foundation established in two key projects: [analysing_south_african_property_markets](https://github.com/CoenMeintjes/analysing_south_african_property_markets) and [property_investment_analysis_framework](https://github.com/CoenMeintjes/property_investment_analysis_framework). These projects have laid the groundwork for future feature improvements and serve as valuable references for the development of PropScout.
 
 ## Features
 
