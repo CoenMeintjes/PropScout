@@ -1,6 +1,6 @@
 # PropScout | Unlocking the Potential of Property Investment
 
-`PropScout` is a real estate investment app design to budding property investors with identifying potentially lucrative markets as well providing as providing them with a systematic framework for real estate investment deal analysis.
+`PropScout` is a real estate investment app designed to assist budding property investors with identifying potentially lucrative markets as well provide them with a framework for systematic real estate investment deal analysis.
 
 ## Project Overview
 
