@@ -2,7 +2,6 @@
 
 import os.path
 import base64
-import pprint
 import sqlite3
 from urllib.request import urlopen
 from urllib.parse import urljoin
