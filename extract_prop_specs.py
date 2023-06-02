@@ -34,9 +34,21 @@ while True:
         # instantiate master dict()
         property_specs = {}
 
-        # TODO extract city (this should be the same as the search term from the alert)
+        # extract listing_type, suburb, city, province, listing_number from meta data
+        meta_tag = soup.find('meta', {'property': 'al:ios:url'})
+        if meta_tag:
+            url = meta_tag['content'].split('/')
+            listing_type = url[3]
+            suburb = url[4]
+            city = url[5]
+            province = url[6]
+            listing_number = url[8]
+        else:
+            print("Meta tag not found.")
 
-        # TODO extract rental / sale info to classify properly
+        # write data to property_specs dict    
+        property_specs= {'Listing Type': listing_type, 'Suburb': suburb, 'City': city,
+                         'Province': province} 
 
         # extract purchase price
         price_text = None
