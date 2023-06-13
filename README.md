@@ -1,12 +1,10 @@
 # PropScout | Unlocking the Potential of Property Investment
 
-`PropScout` is a real estate investment app designed to assist budding property investors with identifying potentially lucrative markets as well provide them with a framework for systematic real estate investment deal analysis.
+PropScout is a comprehensive real estate investment app designed to empower investors and allow them to thrive in the dynamic property market.
 
 ## Project Overview
 
-PropScout is a real estate investment app that helps property investors identify promising markets and offers a systematic framework for real estate deal analysis. It leverages data extraction, storage, and analysis to streamline the property analysis workflow and enable users to make informed investment decisions. Building on previous projects, PropScout focuses on collecting and storing property listings to create a comprehensive database for analysis, with plans to incorporate additional features in the future.
-
-PropScout builds upon the foundation established in two key projects: [analysing_south_african_property_markets](https://github.com/CoenMeintjes/analysing_south_african_property_markets) and [property_investment_analysis_framework](https://github.com/CoenMeintjes/property_investment_analysis_framework). These projects have laid the groundwork for future feature improvements and serve as valuable references for the development of PropScout.
+In its current state of development, PropScout is capable of automating the extraction of property listing notifications from a Gmail inbox, securely storing essential information in a SQLite database, and empowering users with data analysis tools that facilitate informed investment decisions. Ultimately the app will build upon the foundation established in two pivotal projects: [analysing_south_african_property_markets](https://github.com/CoenMeintjes/analysing_south_african_property_markets) and [property_investment_analysis_framework](https://github.com/CoenMeintjes/property_investment_analysis_framework). PropScout is poised for continuous feature enhancements and draws upon these projects as invaluable references for its ongoing development journey.
 
 ## Features
 
